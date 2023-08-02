@@ -46,7 +46,7 @@ public class ColorSensor extends SubsystemBase {
             return ColorResult.None;
         }
 
-        System.out.println("Color proximity: " + detectedProximity);
+        // System.out.println("Color proximity: " + detectedProximity);
 
         ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 

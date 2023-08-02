@@ -31,21 +31,21 @@ public class SwerveModule {
     private final int id;
 
     /* Motors */
-    private final CANSparkMax m_driveMotor;
-    private final CANSparkMax m_turningMotor;
+    public final CANSparkMax m_driveMotor;
+    public final CANSparkMax m_turningMotor;
 
-    private final RelativeEncoder m_driveEncoder;
-    private final RelativeEncoder m_turningEncoder;
+    public final RelativeEncoder m_driveEncoder;
+    public final RelativeEncoder m_turningEncoder;
 
     /* Abs Encoder */
     public final AnalogInput absoluteEncoder;
-    private final boolean absoluteEncoderReversed;
-    private final double absoluteEncoderOffsetRad;
+    public final boolean absoluteEncoderReversed;
+    public final double absoluteEncoderOffsetRad;
 
     // TODO: Gains are for example purposes only - must be determined for your own
     // robot!
-    private final SparkMaxPIDController m_drivePIDController; // 0.3
-    private final SparkMaxPIDController m_turnPIDController; // 0.3
+    public final SparkMaxPIDController m_drivePIDController; // 0.3
+    public final SparkMaxPIDController m_turnPIDController; // 0.3
 
     /**
      * Constructs a SwerveModule with a drive motor, turning motor, drive encoder
@@ -195,7 +195,7 @@ public class SwerveModule {
         SwerveModuleState state = SwerveModuleState.optimize(desiredState,
                 new Rotation2d(m_turningEncoder.getPosition()));
 
-        System.out.println(state.speedMetersPerSecond + " " + m_driveEncoder.getVelocity());
+        // System.out.println(state.speedMetersPerSecond + " " + m_driveEncoder.getVelocity());
 
         m_drivePIDController.setReference(state.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
 

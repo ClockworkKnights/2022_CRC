@@ -43,6 +43,7 @@ public class Robot extends RobotBase {
     private ShuffleboardTab sb_tab = Shuffleboard.getTab("Debug");
     private NetworkTableEntry sb_entry_shooting_target = sb_tab.add("Shooting Target", 10000).getEntry();
     private NetworkTableEntry sb_entry_shooting_angle = sb_tab.add("Shooting Angle", 0).getEntry();
+    private NetworkTableEntry sb_entry_y = sb_tab.add("Limelight Y", 0).getEntry();
 
     public void robotInit() {
 
@@ -50,6 +51,7 @@ public class Robot extends RobotBase {
 
     public void disabled() {
         while (!isEnabled()) {
+            intake.m_down.setInverted(true);
 
             // System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
             // swerve.m_lf.getTurningPosition());
@@ -59,19 +61,22 @@ public class Robot extends RobotBase {
             // swerve.m_lb.getTurningPosition());
             // System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
             // swerve.m_rb.getTurningPosition());
-            System.out.println(swerve.m_rf.getAbsoluteEncoderRad());
+
+            // System.out.println(swerve.m_rf.getAbsoluteEncoderRad());
             
+
+            // System.out.println(Intake.m_down.getInverted() + " " + swerve.m_lf.m_driveMotor.getInverted() + " " + swerve.m_rf.m_driveMotor.getInverted() + " " + swerve.m_lb.m_driveMotor.getInverted() + " " + swerve.m_rb.m_driveMotor.getInverted());
 
             Timer.delay(1);
         }
     }
 
     public double aiming_speed(double y) {
-        return -0.004 * y * y * y * y - 0.0267 * y * y * y + 6.7855 * y * y - 118.72 * y + 9517.4;
+        return y = 0.0024*y*y*y*y - 0.1904*y*y*y + 2.8998*y*y - 25.566*y + 9480;
     }
 
     public double aiming_angle(double y) {
-        return -0.06557411360877392 * y + 4.391801666038763;
+        return -0.1 * y + 4;
     }
 
     public void autonomous() {
@@ -106,7 +111,7 @@ public class Robot extends RobotBase {
             double joystick_sideway = MathUtil.applyDeadband(joystick.getRawAxis(joystick_axis_sideway), 0.04);
             double joystick_rotation = MathUtil.applyDeadband(joystick.getRawAxis(joystick_axis_rotation), 0.04);
 
-            if (!aiming) {
+            if (!joystick.getRawButton(5)) {
                 swerve.drive(joystick_forward * 2.2, joystick_sideway * 2.2,
                         joystick_rotation * 3); // 3.5 3.5 7
             }
@@ -114,7 +119,7 @@ public class Robot extends RobotBase {
             /* Intake */
 
             if (!intakeOuting) {
-                if (color.what() == ColorSensor.ColorResult.Red) {
+                if (false) {//color.what() == ColorSensor.ColorResult.Red) {
                     intakeOuting = true;
                     intakeOutingDDL = Timer.getFPGATimestamp() + 1;
                     continue;
@@ -187,6 +192,8 @@ public class Robot extends RobotBase {
                 shooting = false;
                 shooter.setVelocity(1000);
                 // shooter.setVelocity(joystick_forward*10000);
+                // Shooter.m_left.set(joystick_forward);
+                // Shooter.m_right.set(-joystick.getRawAxis(5));
             }
             
 
@@ -217,6 +224,10 @@ public class Robot extends RobotBase {
 
             aimer.setPosition(shooting_angle);
 
+            System.out.println("Shooter Temp: " + shooter.getTempLeft() + " " + shooter.getTempRight());
+
+            
+
             // System.out.println(aimer.get() + " " + aimer.getPosition() + " " +
             // aimer.getCurrent());
 
@@ -235,11 +246,13 @@ public class Robot extends RobotBase {
 
             limelight.update();
 
-            if (LimeLight.valid && joystick.getRawAxis(2) > 0.15) {
-                shooting_target = aiming_speed(limelight.y);
-                shooting_angle = aiming_angle(limelight.y);
-            // shooting_target = sb_entry_shooting_target.getDouble(8000);
-            // shooting_angle = sb_entry_shooting_angle.getDouble(4.5);
+            if (LimeLight.valid) {
+                shooting_target = shooting_target * 0.8 + aiming_speed(limelight.y) * 0.2;
+                shooting_angle = shooting_angle * 0.8 + aiming_angle(limelight.y) * 0.2;
+                sb_entry_y.setDouble(limelight.y);
+                // shooting_target = sb_entry_shooting_target.getDouble(8000);
+                sb_entry_shooting_angle.setDouble(shooting_angle);
+                sb_entry_shooting_target.setDouble(shooting_target);
                 // System.out.println(limelight.y + " " + shooting_target + " " + shooting_angle);
             }
 
@@ -282,7 +295,7 @@ public class Robot extends RobotBase {
                 Timer.delay(0.1);
             }
             while (joystick.getAButton()) {
-                System.out.println(aimer.getPosition());
+                // System.out.println(aimer.getPosition());
                 Timer.delay(0.1);
             }
             aimer.reset();

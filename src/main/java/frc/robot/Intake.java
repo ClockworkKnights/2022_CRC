@@ -26,7 +26,6 @@ public class Intake {
 
     public Intake() {
 
-        if (!inited) {
             m_down.restoreFactoryDefaults();
             m_up.restoreFactoryDefaults();
             m_eat.restoreFactoryDefaults();
@@ -34,8 +33,10 @@ public class Intake {
             m_down.setInverted(true);
             m_up.setInverted(true);
             m_eat.setInverted(false);
+
+            
+
             inited = true;
-        }
     }
 
     public void set_eat(double speed) {

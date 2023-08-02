@@ -14,10 +14,15 @@ public class Swerve {
     public static final double kMaxSpeed = 5.0; // 3 meters per second
     public static final double kMaxAngularSpeed = 4 * Math.PI; // 1/2 rotation per second
 
-    public static final double k_lf_abs_enc_offset = 3.8670269580631254 + 1. / 180 * Math.PI * 3;
-    public static final double k_rf_abs_enc_offset = 5.7225050230236905  + 1. / 180 * Math.PI * 0;
-    public static final double k_lb_abs_enc_offset = 5.365764946415658  + 1. / 180 * Math.PI * 0;
-    public static final double k_rb_abs_enc_offset = 5.57288877002996   + 1. / 180 * Math.PI * -2;
+    public static final double k_lf_abs_enc_offset = 2.439035908747462  + 1. / 180 * Math.PI * 5;
+    public static final double k_rf_abs_enc_offset = 5.094856679390341  + 1. / 180 * Math.PI * 3;
+    public static final double k_lb_abs_enc_offset = 1.5473079073795082 + 1. / 180 * Math.PI * -2;
+    public static final double k_rb_abs_enc_offset = 6.055824586150275  + 1. / 180 * Math.PI * -3;
+    
+    // public static final double k_lf_abs_enc_offset = 0;
+    // public static final double k_rf_abs_enc_offset = 0;
+    // public static final double k_lb_abs_enc_offset = 0;
+    // public static final double k_rb_abs_enc_offset = 0;
 
     public final SwerveModule m_lf = new SwerveModule(2, 1, false, true, 0, k_lf_abs_enc_offset, false, 1);
     public final SwerveModule m_rf = new SwerveModule(3, 4, true, true, 1, k_rf_abs_enc_offset, false, 1);
@@ -58,7 +63,7 @@ public class Swerve {
         m_lf.setDesiredState(swerveModuleStates[0]);
         m_rf.setDesiredState(swerveModuleStates[1]);
         m_lb.setDesiredState(swerveModuleStates[2]);
-        m_rb.setDesiredState(swerveModuleStates[3]);
+        m_rb.setDesiredState(swerveModuleStates[3]); 
     }
 
     /**
