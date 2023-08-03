@@ -99,7 +99,7 @@ public class SwerveModule {
         // Set the distance per pulse for the drive encoder. We can simply use the
         // distance traveled for one rotation of the wheel divided by the encoder
         // resolution.
-        m_driveEncoder.setPositionConversionFactor(0.026868672416183105 / wheelSizeCompensationRatio);
+        m_driveEncoder.setPositionConversionFactor(0.026868267416183105 / wheelSizeCompensationRatio);
         m_driveEncoder.setVelocityConversionFactor(4.478112069363851E-4 / wheelSizeCompensationRatio);
 
         // Set the distance (in this case, angle) per pulse for the turning encoder.

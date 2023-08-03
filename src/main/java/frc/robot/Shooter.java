@@ -15,7 +15,7 @@ public class Shooter {
     public static WPI_TalonFX m_left = new WPI_TalonFX(13);
     public static WPI_TalonFX m_right = new WPI_TalonFX(14);
 
-    // private Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+    public static Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
 
     public static boolean inited = false;
 
@@ -110,11 +110,11 @@ public class Shooter {
         if (velocity < 2000) {
             m_left.config_kI(0, 0);
             m_right.config_kI(0, 0);
-            // compressor.enableDigital();
+            compressor.enableDigital();
         } else {
             m_left.config_kI(0, 0.0001);
             m_right.config_kI(0, 0.0001);
-            // compressor.disable();
+            compressor.disable();
         }
         m_left.set(TalonFXControlMode.Velocity, velocity);
         m_right.set(TalonFXControlMode.Velocity, velocity);

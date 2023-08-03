@@ -6,11 +6,14 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,7 +29,6 @@ public class Robot extends RobotBase {
     public static final int joystick_axis_rotation = 4;
 
     /* Sensors */
-    public static AHRS AHRSSensor = new AHRS();
     public static LimeLight limelight = new LimeLight();
     public static ColorSensor color = new ColorSensor();
 
@@ -40,33 +42,38 @@ public class Robot extends RobotBase {
     public static Aimer aimer = new Aimer();
 
     /* SB */
-    private ShuffleboardTab sb_tab = Shuffleboard.getTab("Debug");
+    private ShuffleboardTab sb_tab = Shuffleboard.getTab("Dashboard");
     private NetworkTableEntry sb_entry_shooting_target = sb_tab.add("Shooting Target", 10000).getEntry();
     private NetworkTableEntry sb_entry_shooting_angle = sb_tab.add("Shooting Angle", 0).getEntry();
     private NetworkTableEntry sb_entry_y = sb_tab.add("Limelight Y", 0).getEntry();
 
-    public void robotInit() {
+    private NetworkTableEntry sb_odo_x = sb_tab.add("Odo X", 0).getEntry();
+    private NetworkTableEntry sb_odo_y = sb_tab.add("Odo Y", 0).getEntry();
+    private NetworkTableEntry sb_odo_t = sb_tab.add("Odo T", 0).getEntry();
 
+    private NetworkTableEntry sb_auto_chooser = sb_tab.add("Autonomous Program", "0").getEntry();
+
+    public void robotInit() {
+        sb_auto_chooser.setString("3");
     }
 
     public void disabled() {
         while (!isEnabled()) {
             intake.m_down.setInverted(true);
             System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
-            swerve.m_lf.getTurningPosition());
+                    swerve.m_lf.getTurningPosition());
             System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
-            swerve.m_rf.getTurningPosition());
+                    swerve.m_rf.getTurningPosition());
             System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
-            swerve.m_lb.getTurningPosition());
+                    swerve.m_lb.getTurningPosition());
             System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
-            swerve.m_rb.getTurningPosition());
-            // System.out.println(Intake.m_down.getInverted() + " " + swerve.m_lf.m_driveMotor.getInverted() + " " + swerve.m_rf.m_driveMotor.getInverted() + " " + swerve.m_lb.m_driveMotor.getInverted() + " " + swerve.m_rb.m_driveMotor.getInverted());
+                    swerve.m_rb.getTurningPosition());
             Timer.delay(1);
         }
     }
 
     public double aiming_speed(double y) {
-        return y = 0.0024*y*y*y*y - 0.1904*y*y*y + 2.8998*y*y - 25.566*y + 9480;
+        return y = 0.0024 * y * y * y * y - 0.1904 * y * y * y + 2.8998 * y * y - 25.566 * y + 9480;
     }
 
     public double aiming_angle(double y) {
@@ -74,7 +81,301 @@ public class Robot extends RobotBase {
     }
 
     public void autonomous() {
-        // isDisabled() need to be called
+        String auto_chosen = sb_auto_chooser.getString("1");
+        switch (auto_chosen) {
+            case "2": {
+
+                // isDisabled() need to be called
+                PIDController pid_x = new PIDController(5, 0, 1);
+                PIDController pid_y = new PIDController(5, 0, 1);
+                PIDController pid_t = new PIDController(0.06, 0, 0);
+
+                double maxSpeed = 0.8;
+                double maxTurn = 2.4;
+
+                double time = Timer.getFPGATimestamp();
+
+                swerve.ahrs.zeroYaw();
+                swerve.updateOdometry();
+                swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new Rotation2d(0));
+                swerve.updateOdometry();
+
+                pid_x.setSetpoint(1);
+                pid_y.setSetpoint(0);
+                pid_t.setSetpoint(0);
+
+                intake.set_eat(1);
+                intake.set_solenoid(false);
+
+                while (Timer.getFPGATimestamp() - time < 0.8 && isAutonomous() && isEnabled()) {
+
+                    swerve.drive(
+                            Math.min(Math.max(-maxSpeed, pid_x.calculate(swerve.m_odometry.getPoseMeters().getX())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxSpeed, pid_y.calculate(swerve.m_odometry.getPoseMeters().getY())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxTurn, pid_t.calculate(swerve.ahrs.getAngle())), maxTurn),
+                            true);
+                    swerve.updateOdometry();
+
+                    if (swerve.m_odometry.getPoseMeters().getX() > 0.5) {
+                        intake.set_down(1);
+                        intake.set_solenoid(true);
+                    }
+
+                    if (Math.abs(swerve.m_odometry.getPoseMeters().getX() - 1) > 0.05) {
+                        time = Timer.getFPGATimestamp();
+                    }
+
+                    Timer.delay(0.005);
+                }
+                time = Timer.getFPGATimestamp();
+
+                pid_x.setSetpoint(1);
+                pid_y.setSetpoint(0);
+                pid_t.setSetpoint(175);
+
+                intake.set_eat(0);
+                intake.set_down(0);
+                intake.set_solenoid(false);
+
+                maxSpeed = 1.8;
+                maxTurn = 2.4;
+
+                time = Timer.getFPGATimestamp();
+
+                while (Timer.getFPGATimestamp() - time < 0.4 && isAutonomous() && isEnabled()) {
+
+                    shooter.setVelocity(10000);
+                    aimer.setPosition(3);
+
+                    swerve.drive(
+                            Math.min(Math.max(-maxSpeed, pid_x.calculate(swerve.m_odometry.getPoseMeters().getX())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxSpeed, pid_y.calculate(swerve.m_odometry.getPoseMeters().getY())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxTurn, pid_t.calculate(swerve.ahrs.getAngle())), maxTurn),
+                            true);
+                    swerve.updateOdometry();
+
+                    if (Math.abs(swerve.ahrs.getAngle() - 175) > 5) {
+                        time = Timer.getFPGATimestamp();
+                    }
+
+                    Timer.delay(0.005);
+                }
+                time = Timer.getFPGATimestamp();
+                swerve.drive(0, 0, 0);
+
+                // Shoot ball
+
+                intake.set_up(1);
+                intake.set_down(1);
+
+                time = Timer.getFPGATimestamp();
+
+                while (Timer.getFPGATimestamp() - time < 3) {
+                    swerve.updateOdometry();
+                    Timer.delay(0.005);
+                }
+            }
+                break;
+            case "1": {
+
+                // isDisabled() need to be called
+                PIDController pid_x = new PIDController(5, 0, 1);
+                PIDController pid_y = new PIDController(5, 0, 1);
+                PIDController pid_t = new PIDController(0.06, 0, 0);
+
+                double maxSpeed = 1;// 1;
+                double maxTurn = 1.5;// 2.4;
+
+                double time = Timer.getFPGATimestamp();
+
+                swerve.ahrs.zeroYaw();
+                swerve.updateOdometry();
+                swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new Rotation2d(0));
+                swerve.updateOdometry();
+
+                pid_x.setSetpoint(0.85);
+                pid_y.setSetpoint(0);
+                pid_t.setSetpoint(0);
+
+                intake.set_eat(1);
+                intake.set_solenoid(false);
+
+                while (Timer.getFPGATimestamp() - time < 0.8 && isAutonomous() && isEnabled()) {
+
+                    swerve.drive(
+                            Math.min(Math.max(-maxSpeed, pid_x.calculate(swerve.m_odometry.getPoseMeters().getX())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxSpeed, pid_y.calculate(swerve.m_odometry.getPoseMeters().getY())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxTurn, pid_t.calculate(swerve.ahrs.getAngle())), maxTurn),
+                            true);
+                    swerve.updateOdometry();
+
+                    if (swerve.m_odometry.getPoseMeters().getX() > 0) {
+                        intake.set_down(1);
+                        intake.set_solenoid(true);
+                    }
+
+                    if (Math.abs(swerve.m_odometry.getPoseMeters().getX() - 0.85) > 0.05) {
+                        time = Timer.getFPGATimestamp();
+                    }
+
+                    Timer.delay(0.005);
+                }
+                time = Timer.getFPGATimestamp();
+
+                maxSpeed = 1.8;
+                maxTurn = 2;
+
+                pid_x.setSetpoint(0.0);
+                pid_y.setSetpoint(0);
+                pid_t.setSetpoint(-155);
+
+                intake.set_eat(0);
+                intake.set_down(0);
+                intake.set_up(-0.2);
+                intake.set_solenoid(false);
+
+                while (Timer.getFPGATimestamp() - time < 0.8 && isAutonomous() && isEnabled()) {
+
+                    shooter.setVelocity(9600);
+                    aimer.setPosition(3);
+
+                    swerve.drive(
+                            Math.min(Math.max(-maxSpeed, pid_x.calculate(swerve.m_odometry.getPoseMeters().getX())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxSpeed, pid_y.calculate(swerve.m_odometry.getPoseMeters().getY())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxTurn, pid_t.calculate(swerve.ahrs.getAngle())), maxTurn),
+                            true);
+                    swerve.updateOdometry();
+
+                    if (Math.abs(swerve.m_odometry.getPoseMeters().getX() - 0) > 0.05
+                            || Math.abs(swerve.ahrs.getAngle() - (-155)) > 5) {
+                        time = Timer.getFPGATimestamp();
+                    }
+
+                    Timer.delay(0.005);
+                }
+                time = Timer.getFPGATimestamp();
+                swerve.drive(0, 0, 0);
+
+                // Shoot ball
+
+                intake.set_up(1);
+                intake.set_down(1);
+
+                time = Timer.getFPGATimestamp();
+
+                while (Timer.getFPGATimestamp() - time < 3) {
+                    swerve.updateOdometry();
+                    Timer.delay(0.005);
+                }
+            }
+                break;
+            case "3": {
+
+                // isDisabled() need to be called
+                PIDController pid_x = new PIDController(5, 0, 1);
+                PIDController pid_y = new PIDController(5, 0, 1);
+                PIDController pid_t = new PIDController(0.06, 0, 0);
+
+                double maxSpeed = 0.8;
+                double maxTurn = 2.4;
+
+                double time = Timer.getFPGATimestamp();
+
+                swerve.ahrs.zeroYaw();
+                swerve.updateOdometry();
+                swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new Rotation2d(0));
+                swerve.updateOdometry();
+
+                pid_x.setSetpoint(1.15);
+                pid_y.setSetpoint(0);
+                pid_t.setSetpoint(0);
+
+                intake.set_eat(1);
+                intake.set_solenoid(false);
+
+                while (Timer.getFPGATimestamp() - time < 0.8 && isAutonomous() && isEnabled()) {
+
+                    swerve.drive(
+                            Math.min(Math.max(-maxSpeed, pid_x.calculate(swerve.m_odometry.getPoseMeters().getX())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxSpeed, pid_y.calculate(swerve.m_odometry.getPoseMeters().getY())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxTurn, pid_t.calculate(swerve.ahrs.getAngle())), maxTurn),
+                            true);
+                    swerve.updateOdometry();
+
+                    if (swerve.m_odometry.getPoseMeters().getX() > 0.5) {
+                        intake.set_down(1);
+                        intake.set_solenoid(true);
+                    }
+
+                    if (Math.abs(swerve.m_odometry.getPoseMeters().getX() - 1.15) > 0.05) {
+                        time = Timer.getFPGATimestamp();
+                    }
+
+                    Timer.delay(0.005);
+                }
+                time = Timer.getFPGATimestamp();
+
+                pid_x.setSetpoint(1.15);
+                pid_y.setSetpoint(0);
+                pid_t.setSetpoint(175);
+
+                intake.set_eat(0);
+                intake.set_down(0);
+                intake.set_solenoid(false);
+
+                maxSpeed = 1.8;
+                maxTurn = 2.4;
+
+                time = Timer.getFPGATimestamp();
+
+                while (Timer.getFPGATimestamp() - time < 0.4 && isAutonomous() && isEnabled()) {
+
+                    shooter.setVelocity(10000);
+                    aimer.setPosition(3);
+
+                    swerve.drive(
+                            Math.min(Math.max(-maxSpeed, pid_x.calculate(swerve.m_odometry.getPoseMeters().getX())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxSpeed, pid_y.calculate(swerve.m_odometry.getPoseMeters().getY())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxTurn, pid_t.calculate(swerve.ahrs.getAngle())), maxTurn),
+                            true);
+                    swerve.updateOdometry();
+
+                    if (Math.abs(swerve.ahrs.getAngle() - 175) > 5) {
+                        time = Timer.getFPGATimestamp();
+                    }
+
+                    Timer.delay(0.005);
+                }
+                time = Timer.getFPGATimestamp();
+                swerve.drive(0, 0, 0);
+
+                // Shoot ball
+
+                intake.set_up(1);
+                intake.set_down(1);
+
+                time = Timer.getFPGATimestamp();
+
+                while (Timer.getFPGATimestamp() - time < 3) {
+                    swerve.updateOdometry();
+                    Timer.delay(0.005);
+                }
+            }
+                break;
+        }
+
     }
 
     public boolean ready_shoot(double target) {
@@ -105,8 +406,6 @@ public class Robot extends RobotBase {
             double joystick_sideway = MathUtil.applyDeadband(joystick.getRawAxis(joystick_axis_sideway), 0.04);
             double joystick_rotation = MathUtil.applyDeadband(joystick.getRawAxis(joystick_axis_rotation), 0.04);
 
-            
-
             if (!joystick.getRawButton(5)) {
                 swerve.drive(joystick_forward * 2.2, joystick_sideway * 2.2,
                         joystick_rotation * 3); // 3.5 3.5 7
@@ -115,7 +414,7 @@ public class Robot extends RobotBase {
             /* Intake */
 
             if (!intakeOuting) {
-                if (false) {//color.what() == ColorSensor.ColorResult.Red) {
+                if (false) {// color.what() == ColorSensor.ColorResult.Red) {
                     intakeOuting = true;
                     intakeOutingDDL = Timer.getFPGATimestamp() + 1;
                     continue;
@@ -192,7 +491,6 @@ public class Robot extends RobotBase {
                 // Shooter.m_left.set(joystick_forward);
                 // Shooter.m_right.set(-joystick.getRawAxis(5));
             }
-            
 
             if (joystick.getRawButton(5)) {
                 aiming = true;
@@ -209,6 +507,13 @@ public class Robot extends RobotBase {
                 pid_aimer.calculate(0);
             }
 
+            if (joystick.getRawButton(7)) {
+                swerve.ahrs.zeroYaw();
+                swerve.updateOdometry();
+                swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new Rotation2d(0));
+                swerve.updateOdometry();
+            }
+
             /* Aimer */
 
             // aimer.set(joystick_forward * 0.2);
@@ -221,15 +526,14 @@ public class Robot extends RobotBase {
 
             aimer.setPosition(shooting_angle);
 
-            System.out.println("Shooter Temp: " + shooter.getTempLeft() + " " + shooter.getTempRight());
-
-            
+            // System.out.println("Shooter Temp: " + shooter.getTempLeft() + " " +
+            // shooter.getTempRight());
 
             // System.out.println(aimer.get() + " " + aimer.getPosition() + " " +
             // aimer.getCurrent());
 
             /* Debug */
-            
+
             // System.out.println("LF: " + swerve.m_lf.getDrivePosition() + " " +
             // swerve.m_lf.getTurningPosition());
             // System.out.println("RF: " + swerve.m_rf.getDrivePosition() + " " +
@@ -242,6 +546,12 @@ public class Robot extends RobotBase {
             // System.out.println(aimer.getPosition());
 
             limelight.update();
+            swerve.updateOdometry();
+
+            System.out.println("Odometry: " + swerve.m_odometry.getPoseMeters());
+            sb_odo_t.setDouble(swerve.m_odometry.getPoseMeters().getRotation().getDegrees());
+            sb_odo_x.setDouble(swerve.m_odometry.getPoseMeters().getX());
+            sb_odo_y.setDouble(swerve.m_odometry.getPoseMeters().getY());
 
             if (LimeLight.valid) {
                 shooting_target = shooting_target * 0.8 + aiming_speed(limelight.y) * 0.2;
@@ -250,10 +560,9 @@ public class Robot extends RobotBase {
                 // shooting_target = sb_entry_shooting_target.getDouble(8000);
                 sb_entry_shooting_angle.setDouble(shooting_angle);
                 sb_entry_shooting_target.setDouble(shooting_target);
-                // System.out.println(limelight.y + " " + shooting_target + " " + shooting_angle);
+                // System.out.println(limelight.y + " " + shooting_target + " " +
+                // shooting_angle);
             }
-
-
 
             Timer.delay(0.005);
         }
@@ -299,6 +608,12 @@ public class Robot extends RobotBase {
             aimer.setSoftLimit(true);
             Aimer.inited_outer = true;
 
+        }
+        {
+            swerve.ahrs.zeroYaw();
+            swerve.updateOdometry();
+            swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new Rotation2d(0));
+            swerve.updateOdometry();
         }
 
     }
@@ -380,6 +695,7 @@ public class Robot extends RobotBase {
         intake.set_up(0);
         intake.set_eat(0);
         shooter.set(0);
+        Shooter.compressor.enableDigital();
         resetAllCylinders();
     }
 

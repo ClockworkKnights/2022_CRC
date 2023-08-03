@@ -20,7 +20,7 @@ public class Intake {
     private final ColorSensorV3 color_sensor = new ColorSensorV3(I2C.Port.kOnboard);
 
     public static DoubleSolenoid s_eat = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
-    public static Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
+    // public static Compressor compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
 
     public static boolean inited = false;
 

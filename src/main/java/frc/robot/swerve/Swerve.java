@@ -18,11 +18,12 @@ public class Swerve {
     // public static final double k_rf_abs_enc_offset = 5.093351582440393;
     // public static final double k_lb_abs_enc_offset = 1.5228514157835433;
     // public static final double k_rb_abs_enc_offset = 5.38610483240299+Math.PI;
+
     public static final double k_lf_abs_enc_offset = 4.348730001165526;
-    public static final double k_rf_abs_enc_offset = 2.0045900829154846+Math.PI;
-    public static final double k_lb_abs_enc_offset = 1.5969793037931925-2 / 180 * Math.PI;
-    public static final double k_rb_abs_enc_offset = 0.5906674820544972+Math.PI-3 / 180 * Math.PI;
-    ;
+    public static final double k_rf_abs_enc_offset = 2.0045900829154846 + Math.PI;
+    public static final double k_lb_abs_enc_offset = 1.5969793037931925 - 2 / 180 * Math.PI;
+    public static final double k_rb_abs_enc_offset = 0.5906674820544972 + Math.PI - 13 / 180 * Math.PI - 0.1727;
+
     // public static final double k_lf_abs_enc_offset = 0;
     // public static final double k_rf_abs_enc_offset = 0;
     // public static final double k_lb_abs_enc_offset = 0;
@@ -33,15 +34,15 @@ public class Swerve {
     public final SwerveModule m_lb = new SwerveModule(7, 8, false, true, 3, k_lb_abs_enc_offset, false, 1);
     public final SwerveModule m_rb = new SwerveModule(5, 6, true, true, 2, k_rb_abs_enc_offset, false, 1);
 
-    private final AHRS ahrs = new AHRS();
+    public final AHRS ahrs = new AHRS();
 
-    private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+    public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
             new Translation2d(0.26, -0.26), // LF
             new Translation2d(0.26, 0.26), // RF
             new Translation2d(-0.26, -0.26), // LB
             new Translation2d(-0.26, 0.26)); // RB
 
-    private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, ahrs.getRotation2d());
+    public final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, ahrs.getRotation2d());
 
     public Swerve(boolean resetHeading) {
         if (resetHeading)
@@ -67,7 +68,7 @@ public class Swerve {
         m_lf.setDesiredState(swerveModuleStates[0]);
         m_rf.setDesiredState(swerveModuleStates[1]);
         m_lb.setDesiredState(swerveModuleStates[2]);
-        m_rb.setDesiredState(swerveModuleStates[3]); 
+        m_rb.setDesiredState(swerveModuleStates[3]);
     }
 
     /**
