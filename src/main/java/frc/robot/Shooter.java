@@ -118,6 +118,5 @@ public class Shooter {
         }
         m_left.set(TalonFXControlMode.Velocity, velocity);
         m_right.set(TalonFXControlMode.Velocity, velocity);
-
     }
 }

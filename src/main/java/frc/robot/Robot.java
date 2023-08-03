@@ -52,21 +52,15 @@ public class Robot extends RobotBase {
     public void disabled() {
         while (!isEnabled()) {
             intake.m_down.setInverted(true);
-
-            // System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
-            // swerve.m_lf.getTurningPosition());
-            // System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
-            // swerve.m_rf.getTurningPosition());
-            // System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
-            // swerve.m_lb.getTurningPosition());
-            // System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
-            // swerve.m_rb.getTurningPosition());
-
-            // System.out.println(swerve.m_rf.getAbsoluteEncoderRad());
-            
-
+            System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
+            swerve.m_lf.getTurningPosition());
+            System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
+            swerve.m_rf.getTurningPosition());
+            System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
+            swerve.m_lb.getTurningPosition());
+            System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
+            swerve.m_rb.getTurningPosition());
             // System.out.println(Intake.m_down.getInverted() + " " + swerve.m_lf.m_driveMotor.getInverted() + " " + swerve.m_rf.m_driveMotor.getInverted() + " " + swerve.m_lb.m_driveMotor.getInverted() + " " + swerve.m_rb.m_driveMotor.getInverted());
-
             Timer.delay(1);
         }
     }
@@ -111,6 +105,8 @@ public class Robot extends RobotBase {
             double joystick_sideway = MathUtil.applyDeadband(joystick.getRawAxis(joystick_axis_sideway), 0.04);
             double joystick_rotation = MathUtil.applyDeadband(joystick.getRawAxis(joystick_axis_rotation), 0.04);
 
+            
+
             if (!joystick.getRawButton(5)) {
                 swerve.drive(joystick_forward * 2.2, joystick_sideway * 2.2,
                         joystick_rotation * 3); // 3.5 3.5 7
@@ -127,6 +123,7 @@ public class Robot extends RobotBase {
                     if (joystick.getRawAxis(3) > 0.15) {
                         intake.set_solenoid(true);
                         intake.set_eat(0.6);
+
                         intake.set_down(1);
                     } else if (joystick.getRawButton(6)) {
                         intake.set_solenoid(false);
@@ -232,7 +229,7 @@ public class Robot extends RobotBase {
             // aimer.getCurrent());
 
             /* Debug */
-
+            
             // System.out.println("LF: " + swerve.m_lf.getDrivePosition() + " " +
             // swerve.m_lf.getTurningPosition());
             // System.out.println("RF: " + swerve.m_rf.getDrivePosition() + " " +
