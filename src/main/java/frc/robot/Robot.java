@@ -54,7 +54,6 @@ public class Robot extends RobotBase {
 
     private NetworkTableEntry sb_auto_chooser = sb_tab.add("Autonomous Program", "0").getEntry();
     private NetworkTableEntry sb_color_chooser = sb_tab.add("Color", "Blue").getEntry();
-    
 
     public void robotInit() {
         sb_auto_chooser.setString("3");
@@ -72,8 +71,17 @@ public class Robot extends RobotBase {
                     swerve.m_lb.getTurningPosition());
             System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
                     swerve.m_rb.getTurningPosition());
-            System.out.println("Climber: "+ climber.getPosition());
-                       Timer.delay(1);
+            System.out.println("Climber: " + climber.getPosition());
+
+            String color_chosen = sb_color_chooser.getString("Blue");
+            ColorResult color_opposite;
+            if (color_chosen == "Blue") {
+                color_opposite = ColorResult.Red;
+            } else {
+                color_opposite = ColorResult.Blue;
+            }
+            System.out.println("Color: " + color_chosen + " " + (color_chosen.equals("Blue")));
+
         }
     }
 
@@ -85,11 +93,10 @@ public class Robot extends RobotBase {
         return -0.1 * y + 4;
     }
 
-    public void practice()
-    {   
-      
-      
+    public void practice() {
+
     }
+
     public void autonomous() {
         String auto_chosen = sb_auto_chooser.getString("1");
         switch (auto_chosen) {
@@ -425,15 +432,16 @@ public class Robot extends RobotBase {
 
             String color_chosen = sb_color_chooser.getString("Blue");
             ColorResult color_opposite;
-            if(color_chosen == "Blue")
-            {
+            if (color_chosen.equals("Blue")) {
                 color_opposite = ColorResult.Red;
-            }
-            else{
+            } else if (color_chosen.equals("Red")) {
                 color_opposite = ColorResult.Blue;
+            } else {
+                color_opposite = ColorResult.None;
             }
+
             if (!intakeOuting) {
-                if (color.what() == color_opposite) {
+                if (color_opposite != ColorResult.None && color.what() == color_opposite) {
                     intakeOuting = true;
                     intakeOutingDDL = Timer.getFPGATimestamp() + 1;
                     continue;
@@ -634,19 +642,18 @@ public class Robot extends RobotBase {
             swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new Rotation2d(0));
             swerve.updateOdometry();
         }
-        while(isEnabled())
-        {
-            System.out.println("Climber: "+ climber.getPosition());
-            if (joystick.getYButton()  && climber.getPosition() > -415562) {   
+        while (isEnabled()) {
+            System.out.println("Climber: " + climber.getPosition());
+            if (joystick.getYButton() && climber.getPosition() > -415562) {
                 climber.set(-1);
-            } else if (joystick.getAButton() && climber.getPosition() < -8000) { 
+            } else if (joystick.getAButton() && climber.getPosition() < -8000) {
                 climber.set(1);
             } else {
                 if (climber.getPosition() <= -415562) {
                     climber.set(0.05);
                 } else {
                     climber.set(0);
-               }
+                }
             }
             Timer.delay(0.005);
         }
