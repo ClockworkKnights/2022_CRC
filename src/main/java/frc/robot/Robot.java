@@ -63,15 +63,15 @@ public class Robot extends RobotBase {
     public void disabled() {
         while (!isEnabled()) {
             intake.m_down.setInverted(true);
-            System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
-                    swerve.m_lf.getTurningPosition());
-            System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
-                    swerve.m_rf.getTurningPosition());
-            System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
-                    swerve.m_lb.getTurningPosition());
-            System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
-                    swerve.m_rb.getTurningPosition());
-            System.out.println("Climber: " + climber.getPosition());
+            // System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
+            //         swerve.m_lf.getTurningPosition());
+            // System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
+            //         swerve.m_rf.getTurningPosition());
+            // System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
+            //         swerve.m_lb.getTurningPosition());
+            // System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
+            //         swerve.m_rb.getTurningPosition());
+            // System.out.println("Climber: " + climber.getPosition());
 
             String color_chosen = sb_color_chooser.getString("Blue");
             ColorResult color_opposite;
@@ -80,8 +80,7 @@ public class Robot extends RobotBase {
             } else {
                 color_opposite = ColorResult.Blue;
             }
-            System.out.println("Color: " + color_chosen + " " + (color_chosen.equals("Blue")));
-
+            // System.out.println("Color: " + color_chosen + " " + (color_chosen.equals("Blue")));
         }
     }
 
@@ -100,6 +99,103 @@ public class Robot extends RobotBase {
     public void autonomous() {
         String auto_chosen = sb_auto_chooser.getString("1");
         switch (auto_chosen) {
+            case "0": {
+
+                // isDisabled() need to be called
+                PIDController pid_x = new PIDController(5, 0, 1);
+                PIDController pid_y = new PIDController(5, 0, 1);
+                PIDController pid_t = new PIDController(0.06, 0, 0);
+
+                double maxSpeed = 0.8;
+                double maxTurn = 2.4;
+
+                double time = Timer.getFPGATimestamp();
+
+                swerve.ahrs.zeroYaw();
+                swerve.updateOdometry();
+                swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new Rotation2d(0));
+                swerve.updateOdometry();
+
+                pid_x.setSetpoint(1);
+                pid_y.setSetpoint(0);
+                pid_t.setSetpoint(0);
+
+                intake.set_eat(1);
+                intake.set_solenoid(false);
+
+                while (Timer.getFPGATimestamp() - time < 0.8 && isAutonomous() && isEnabled()) {
+
+                    swerve.drive(
+                            Math.min(Math.max(-maxSpeed, pid_x.calculate(swerve.m_odometry.getPoseMeters().getX())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxSpeed, pid_y.calculate(swerve.m_odometry.getPoseMeters().getY())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxTurn, pid_t.calculate(swerve.ahrs.getAngle())), maxTurn),
+                            true);
+                    swerve.updateOdometry();
+
+                    if (swerve.m_odometry.getPoseMeters().getX() > 0.5) {
+                        intake.set_down(1);
+                        intake.set_solenoid(true);
+                    }
+
+                    if (Math.abs(swerve.m_odometry.getPoseMeters().getX() - 1) > 0.05) {
+                        time = Timer.getFPGATimestamp();
+                    }
+
+                    Timer.delay(0.005);
+                }
+                time = Timer.getFPGATimestamp();
+
+                pid_x.setSetpoint(1);
+                pid_y.setSetpoint(0);
+                pid_t.setSetpoint(180);
+
+                intake.set_eat(0);
+                intake.set_down(0);
+                intake.set_solenoid(false);
+
+                maxSpeed = 1.8;
+                maxTurn = 2.4;
+
+                time = Timer.getFPGATimestamp();
+
+                while (Timer.getFPGATimestamp() - time < 0.4 && isAutonomous() && isEnabled()) {
+
+                    shooter.setVelocity(10000);
+                    aimer.setPosition(3);
+
+                    swerve.drive(
+                            Math.min(Math.max(-maxSpeed, pid_x.calculate(swerve.m_odometry.getPoseMeters().getX())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxSpeed, pid_y.calculate(swerve.m_odometry.getPoseMeters().getY())),
+                                    maxSpeed),
+                            Math.min(Math.max(-maxTurn, pid_t.calculate(swerve.ahrs.getAngle())), maxTurn),
+                            true);
+                    swerve.updateOdometry();
+
+                    if (Math.abs(swerve.ahrs.getAngle() - 175) > 5) {
+                        time = Timer.getFPGATimestamp();
+                    }
+
+                    Timer.delay(0.005);
+                }
+                time = Timer.getFPGATimestamp();
+                swerve.drive(0, 0, 0);
+
+                // Shoot ball
+
+                intake.set_up(0.5);
+                intake.set_down(0.5);
+
+                time = Timer.getFPGATimestamp();
+
+                while (Timer.getFPGATimestamp() - time < 3) {
+                    swerve.updateOdometry();
+                    Timer.delay(0.005);
+                }
+            }
+                break;
             case "2": {
 
                 // isDisabled() need to be called
@@ -392,7 +488,7 @@ public class Robot extends RobotBase {
             }
                 break;
         }
-
+        
     }
 
     public boolean ready_shoot(double target) {
@@ -493,12 +589,12 @@ public class Robot extends RobotBase {
 
             /* Climber (Threshold : -8000 ~ -421000) */
 
-            if (joystick.getYButton() && climber.getPosition() > -421000) {
+            if (joystick.getYButton() && climber.getPosition() > -415562) {
                 climber.set(-1);
             } else if (joystick.getAButton() && climber.getPosition() < -8000) {
                 climber.set(1);
             } else {
-                if (climber.getPosition() <= -421000) {
+                if (climber.getPosition() <= -415562) {
                     climber.set(0.05);
                 } else {
                     climber.set(0);
@@ -575,7 +671,7 @@ public class Robot extends RobotBase {
             limelight.update();
             swerve.updateOdometry();
 
-            System.out.println("Odometry: " + swerve.m_odometry.getPoseMeters());
+            // System.out.println("Odometry: " + swerve.m_odometry.getPoseMeters());
             sb_odo_t.setDouble(swerve.m_odometry.getPoseMeters().getRotation().getDegrees());
             sb_odo_x.setDouble(swerve.m_odometry.getPoseMeters().getX());
             sb_odo_y.setDouble(swerve.m_odometry.getPoseMeters().getY());
@@ -643,7 +739,7 @@ public class Robot extends RobotBase {
             swerve.updateOdometry();
         }
         while (isEnabled()) {
-            System.out.println("Climber: " + climber.getPosition());
+            // System.out.println("Climber: " + climber.getPosition());
             if (joystick.getYButton() && climber.getPosition() > -415562) {
                 climber.set(-1);
             } else if (joystick.getAButton() && climber.getPosition() < -8000) {
