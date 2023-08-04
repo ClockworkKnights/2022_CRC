@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.ColorSensor.ColorResult;
 import frc.robot.swerve.Swerve;
 
 public class Robot extends RobotBase {
@@ -52,9 +53,12 @@ public class Robot extends RobotBase {
     private NetworkTableEntry sb_odo_t = sb_tab.add("Odo T", 0).getEntry();
 
     private NetworkTableEntry sb_auto_chooser = sb_tab.add("Autonomous Program", "0").getEntry();
+    private NetworkTableEntry sb_color_chooser = sb_tab.add("Color", "Blue").getEntry();
+    
 
     public void robotInit() {
         sb_auto_chooser.setString("3");
+        sb_color_chooser.setString("Blue");
     }
 
     public void disabled() {
@@ -68,7 +72,8 @@ public class Robot extends RobotBase {
                     swerve.m_lb.getTurningPosition());
             System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
                     swerve.m_rb.getTurningPosition());
-            Timer.delay(1);
+            System.out.println("Climber: "+ climber.getPosition());
+                       Timer.delay(1);
         }
     }
 
@@ -80,6 +85,11 @@ public class Robot extends RobotBase {
         return -0.1 * y + 4;
     }
 
+    public void practice()
+    {   
+      
+      
+    }
     public void autonomous() {
         String auto_chosen = sb_auto_chooser.getString("1");
         switch (auto_chosen) {
@@ -169,8 +179,8 @@ public class Robot extends RobotBase {
 
                 // Shoot ball
 
-                intake.set_up(1);
-                intake.set_down(1);
+                intake.set_up(0.5);
+                intake.set_down(0.5);
 
                 time = Timer.getFPGATimestamp();
 
@@ -266,8 +276,8 @@ public class Robot extends RobotBase {
 
                 // Shoot ball
 
-                intake.set_up(1);
-                intake.set_down(1);
+                intake.set_up(0.5);
+                intake.set_down(0.5);
 
                 time = Timer.getFPGATimestamp();
 
@@ -327,7 +337,7 @@ public class Robot extends RobotBase {
 
                 pid_x.setSetpoint(1.15);
                 pid_y.setSetpoint(0);
-                pid_t.setSetpoint(175);
+                pid_t.setSetpoint(160);
 
                 intake.set_eat(0);
                 intake.set_down(0);
@@ -352,7 +362,7 @@ public class Robot extends RobotBase {
                             true);
                     swerve.updateOdometry();
 
-                    if (Math.abs(swerve.ahrs.getAngle() - 175) > 5) {
+                    if (Math.abs(swerve.ahrs.getAngle() - 160) > 5) {
                         time = Timer.getFPGATimestamp();
                     }
 
@@ -363,8 +373,8 @@ public class Robot extends RobotBase {
 
                 // Shoot ball
 
-                intake.set_up(1);
-                intake.set_down(1);
+                intake.set_up(0.5);
+                intake.set_down(0.5);
 
                 time = Timer.getFPGATimestamp();
 
@@ -413,8 +423,17 @@ public class Robot extends RobotBase {
 
             /* Intake */
 
+            String color_chosen = sb_color_chooser.getString("Blue");
+            ColorResult color_opposite;
+            if(color_chosen == "Blue")
+            {
+                color_opposite = ColorResult.Red;
+            }
+            else{
+                color_opposite = ColorResult.Blue;
+            }
             if (!intakeOuting) {
-                if (false) {// color.what() == ColorSensor.ColorResult.Red) {
+                if (color.what() == color_opposite) {
                     intakeOuting = true;
                     intakeOutingDDL = Timer.getFPGATimestamp() + 1;
                     continue;
@@ -472,7 +491,7 @@ public class Robot extends RobotBase {
                 climber.set(1);
             } else {
                 if (climber.getPosition() <= -421000) {
-                    climber.set(0.15);
+                    climber.set(0.05);
                 } else {
                     climber.set(0);
                 }
@@ -614,6 +633,22 @@ public class Robot extends RobotBase {
             swerve.updateOdometry();
             swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new Rotation2d(0));
             swerve.updateOdometry();
+        }
+        while(isEnabled())
+        {
+            System.out.println("Climber: "+ climber.getPosition());
+            if (joystick.getYButton()  && climber.getPosition() > -415562) {   
+                climber.set(-1);
+            } else if (joystick.getAButton() && climber.getPosition() < -8000) { 
+                climber.set(1);
+            } else {
+                if (climber.getPosition() <= -415562) {
+                    climber.set(0.05);
+                } else {
+                    climber.set(0);
+               }
+            }
+            Timer.delay(0.005);
         }
 
     }
