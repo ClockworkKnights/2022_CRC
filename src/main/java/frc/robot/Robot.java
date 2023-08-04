@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.ColorSensor.ColorResult;
 import frc.robot.swerve.Swerve;
 
 public class Robot extends RobotBase {
@@ -53,12 +52,9 @@ public class Robot extends RobotBase {
     private NetworkTableEntry sb_odo_t = sb_tab.add("Odo T", 0).getEntry();
 
     private NetworkTableEntry sb_auto_chooser = sb_tab.add("Autonomous Program", "0").getEntry();
-    private NetworkTableEntry sb_color_chooser = sb_tab.add("Color", "Blue").getEntry();
-    
 
     public void robotInit() {
         sb_auto_chooser.setString("3");
-        sb_color_chooser.setString("Blue");
     }
 
     public void disabled() {
@@ -423,17 +419,8 @@ public class Robot extends RobotBase {
 
             /* Intake */
 
-            String color_chosen = sb_color_chooser.getString("Blue");
-            ColorResult color_opposite;
-            if(color_chosen == "Blue")
-            {
-                color_opposite = ColorResult.Red;
-            }
-            else{
-                color_opposite = ColorResult.Blue;
-            }
             if (!intakeOuting) {
-                if (color.what() == color_opposite) {
+                if (color.what() == ColorSensor.ColorResult.Blue) {
                     intakeOuting = true;
                     intakeOutingDDL = Timer.getFPGATimestamp() + 1;
                     continue;
