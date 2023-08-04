@@ -27,7 +27,7 @@ public class Swerve {
     public static final double k_lf_abs_enc_offset = 4.2892527057001555;
     public static final double k_rf_abs_enc_offset = 5.113449829316348;
     public static final double k_lb_abs_enc_offset = 1.5813990179025272;
-    public static final double k_rb_abs_enc_offset = 3.644709241664517;
+    public static final double k_rb_abs_enc_offset = 2.401198196463655;
 
     // public static final double k_lf_abs_enc_offset = 0;
     // public static final double k_rf_abs_enc_offset = 0;
