@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.ColorSensor.ColorResult;
 import frc.robot.swerve.Swerve;
 
 public class Robot extends RobotBase {
@@ -52,23 +53,35 @@ public class Robot extends RobotBase {
     private NetworkTableEntry sb_odo_t = sb_tab.add("Odo T", 0).getEntry();
 
     private NetworkTableEntry sb_auto_chooser = sb_tab.add("Autonomous Program", "0").getEntry();
+    private NetworkTableEntry sb_color_chooser = sb_tab.add("Color", "Blue").getEntry();
 
     public void robotInit() {
         sb_auto_chooser.setString("3");
+        sb_color_chooser.setString("Blue");
     }
 
     public void disabled() {
         while (!isEnabled()) {
             intake.m_down.setInverted(true);
             System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
-                    swerve.m_lf.getTurningPosition());
+            swerve.m_lf.getTurningPosition());
             System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
-                    swerve.m_rf.getTurningPosition());
+            swerve.m_rf.getTurningPosition());
             System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
-                    swerve.m_lb.getTurningPosition());
+            swerve.m_lb.getTurningPosition());
             System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
-                    swerve.m_rb.getTurningPosition());
-            Timer.delay(1);
+            swerve.m_rb.getTurningPosition());
+            System.out.println("Climber: " + climber.getPosition());
+
+            String color_chosen = sb_color_chooser.getString("Blue");
+            ColorResult color_opposite;
+            if (color_chosen == "Blue") {
+                color_opposite = ColorResult.Red;
+            } else {
+                color_opposite = ColorResult.Blue;
+            }
+            // System.out.println("Color: " + color_chosen + " " +
+            // (color_chosen.equals("Blue")));
         }
     }
 
@@ -80,9 +93,152 @@ public class Robot extends RobotBase {
         return -0.1 * y + 4;
     }
 
+    public void practice() {
+
+    }
+
     public void autonomous() {
         String auto_chosen = sb_auto_chooser.getString("1");
         switch (auto_chosen) {
+            // case "0": {
+
+            // // isDisabled() need to be called
+            // PIDController pid_x = new PIDController(5, 0, 1);
+            // PIDController pid_y = new PIDController(5, 0, 1);
+            // PIDController pid_t = new PIDController(0.06, 0, 0);
+
+            // double maxSpeed = 0.8;
+            // double maxTurn = 2.4;
+
+            // double time = Timer.getFPGATimestamp();
+
+            // swerve.ahrs.zeroYaw();
+            // swerve.updateOdometry();
+            // swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new
+            // Rotation2d(0));
+            // swerve.updateOdometry();
+
+            // pid_x.setSetpoint(1);
+            // pid_y.setSetpoint(0);
+            // pid_t.setSetpoint(0);
+
+            // intake.set_eat(1);
+            // intake.set_solenoid(false);
+
+            // while (Timer.getFPGATimestamp() - time < 0.8 && isAutonomous() &&
+            // isEnabled()) {
+
+            // swerve.drive(
+            // Math.min(Math.max(-maxSpeed,
+            // pid_x.calculate(swerve.m_odometry.getPoseMeters().getX())),
+            // maxSpeed),
+            // Math.min(Math.max(-maxSpeed,
+            // pid_y.calculate(swerve.m_odometry.getPoseMeters().getY())),
+            // maxSpeed),
+            // Math.min(Math.max(-maxTurn, pid_t.calculate(swerve.ahrs.getAngle())),
+            // maxTurn),
+            // true);
+            // swerve.updateOdometry();
+
+            // if (swerve.m_odometry.getPoseMeters().getX() > 0.5) {
+            // intake.set_down(1);
+            // intake.set_solenoid(true);
+            // }
+
+            // if (Math.abs(swerve.m_odometry.getPoseMeters().getX() - 1) > 0.05) {
+            // time = Timer.getFPGATimestamp();
+            // }
+
+            // Timer.delay(0.005);
+            // }
+            // time = Timer.getFPGATimestamp();
+
+            // pid_x.setSetpoint(1);
+            // pid_y.setSetpoint(0);
+            // pid_t.setSetpoint(180);
+
+            // intake.set_eat(0);
+            // intake.set_down(0);
+            // intake.set_solenoid(false);
+
+            // maxSpeed = 1.8;
+            // maxTurn = 2.4;
+
+            // time = Timer.getFPGATimestamp();
+
+            // while (Timer.getFPGATimestamp() - time < 0.4 && isAutonomous() &&
+            // isEnabled()) {
+
+            // shooter.setVelocity(10000);
+            // aimer.setPosition(3);
+
+            // swerve.drive(
+            // Math.min(Math.max(-maxSpeed,
+            // pid_x.calculate(swerve.m_odometry.getPoseMeters().getX())),
+            // maxSpeed),
+            // Math.min(Math.max(-maxSpeed,
+            // pid_y.calculate(swerve.m_odometry.getPoseMeters().getY())),
+            // maxSpeed),
+            // Math.min(Math.max(-maxTurn, pid_t.calculate(swerve.ahrs.getAngle())),
+            // maxTurn),
+            // true);
+            // swerve.updateOdometry();
+
+            // if (Math.abs(swerve.ahrs.getAngle() - 175) > 5) {
+            // time = Timer.getFPGATimestamp();
+            // }
+
+            // Timer.delay(0.005);
+            // }
+            // time = Timer.getFPGATimestamp();
+            // swerve.drive(0, 0, 0);
+
+            // // Shoot ball
+
+            // intake.set_up(0.5);
+            // intake.set_down(0.5);
+
+            // time = Timer.getFPGATimestamp();
+
+            // while (Timer.getFPGATimestamp() - time < 3) {
+            // swerve.updateOdometry();
+            // Timer.delay(0.005);
+            // }
+            // }
+            // break;
+            case "0": {
+                PIDController pid_aimer = new PIDController(0.12, 0, 0.002, 0.005);
+                double shooting_angle = 2.5;
+                double shooting_target = 9227;
+                double time = Timer.getFPGATimestamp();
+                while (isAutonomous() && isEnabled()) {
+                    limelight.update();
+                    if (limelight.valid) {
+                        double aimer_turn = Math.min(0.4, Math.max(-0.4, pid_aimer.calculate(-limelight.x)));
+                        swerve.drive(0, 0, aimer_turn);
+                        shooting_target = shooting_target * 0.8 + aiming_speed(limelight.y) * 0.2;
+                        shooting_angle = shooting_angle * 0.8 + aiming_angle(limelight.y) * 0.2;
+                    }
+                    else {
+                        swerve.drive(0, 0, 0);
+                    }
+                    shooter.setVelocity(shooting_target);
+                    if (!ready_shoot(shooting_target)) {
+                        time = Timer.getFPGATimestamp();
+                        intake.set_up(0);
+                    } else {
+                        if (Timer.getFPGATimestamp() - time > 0.5) {
+                            intake.set_up(1);
+                        }
+                        else {
+                            intake.set_up(0);
+                        }
+                    }
+                    swerve.updateOdometry();
+                    Timer.delay(0.005);
+                }
+
+            }
             case "2": {
 
                 // isDisabled() need to be called
@@ -169,8 +325,8 @@ public class Robot extends RobotBase {
 
                 // Shoot ball
 
-                intake.set_up(1);
-                intake.set_down(1);
+                intake.set_up(0.5);
+                intake.set_down(0.5);
 
                 time = Timer.getFPGATimestamp();
 
@@ -266,8 +422,8 @@ public class Robot extends RobotBase {
 
                 // Shoot ball
 
-                intake.set_up(1);
-                intake.set_down(1);
+                intake.set_up(0.5);
+                intake.set_down(0.5);
 
                 time = Timer.getFPGATimestamp();
 
@@ -327,7 +483,7 @@ public class Robot extends RobotBase {
 
                 pid_x.setSetpoint(1.15);
                 pid_y.setSetpoint(0);
-                pid_t.setSetpoint(175);
+                pid_t.setSetpoint(160);
 
                 intake.set_eat(0);
                 intake.set_down(0);
@@ -352,7 +508,7 @@ public class Robot extends RobotBase {
                             true);
                     swerve.updateOdometry();
 
-                    if (Math.abs(swerve.ahrs.getAngle() - 175) > 5) {
+                    if (Math.abs(swerve.ahrs.getAngle() - 160) > 5) {
                         time = Timer.getFPGATimestamp();
                     }
 
@@ -363,8 +519,8 @@ public class Robot extends RobotBase {
 
                 // Shoot ball
 
-                intake.set_up(1);
-                intake.set_down(1);
+                intake.set_up(0.5);
+                intake.set_down(0.5);
 
                 time = Timer.getFPGATimestamp();
 
@@ -413,8 +569,18 @@ public class Robot extends RobotBase {
 
             /* Intake */
 
+            String color_chosen = sb_color_chooser.getString("Blue");
+            ColorResult color_opposite;
+            if (color_chosen.equals("Blue")) {
+                color_opposite = ColorResult.Red;
+            } else if (color_chosen.equals("Red")) {
+                color_opposite = ColorResult.Blue;
+            } else {
+                color_opposite = ColorResult.None;
+            }
+
             if (!intakeOuting) {
-                if (false) {// color.what() == ColorSensor.ColorResult.Red) {
+                if (color_opposite != ColorResult.None && color.what() == color_opposite) {
                     intakeOuting = true;
                     intakeOutingDDL = Timer.getFPGATimestamp() + 1;
                     continue;
@@ -466,13 +632,13 @@ public class Robot extends RobotBase {
 
             /* Climber (Threshold : -8000 ~ -421000) */
 
-            if (joystick.getYButton() && climber.getPosition() > -421000) {
+            if (joystick.getYButton() && climber.getPosition() > -415562) {
                 climber.set(-1);
             } else if (joystick.getAButton() && climber.getPosition() < -8000) {
                 climber.set(1);
             } else {
-                if (climber.getPosition() <= -421000) {
-                    climber.set(0.15);
+                if (climber.getPosition() <= -415562) {
+                    climber.set(0.05);
                 } else {
                     climber.set(0);
                 }
@@ -486,7 +652,13 @@ public class Robot extends RobotBase {
                 shooting = true;
             } else {
                 shooting = false;
-                shooter.setVelocity(1000);
+                if (joystick.getRawButton(7)) {
+                    shooter.set(1);
+                } else if (joystick.getRawButton(8)) {
+                    shooter.set(-1);
+                } else {
+                    shooter.set(0);
+                }
                 // shooter.setVelocity(joystick_forward*10000);
                 // Shooter.m_left.set(joystick_forward);
                 // Shooter.m_right.set(-joystick.getRawAxis(5));
@@ -496,7 +668,7 @@ public class Robot extends RobotBase {
                 aiming = true;
                 limelight.update();
                 if (limelight.valid) {
-                    double aimer_turn = Math.min(0.4, pid_aimer.calculate(-limelight.x));
+                    double aimer_turn = Math.min(0.4, Math.max(-0.4, pid_aimer.calculate(-limelight.x)));
                     swerve.drive(joystick_forward * 1.4, joystick_sideway * 1.4, aimer_turn);
                 } else {
                     swerve.drive(joystick_forward * 2.2, joystick_sideway * 2.2,
@@ -507,12 +679,13 @@ public class Robot extends RobotBase {
                 pid_aimer.calculate(0);
             }
 
-            if (joystick.getRawButton(7)) {
-                swerve.ahrs.zeroYaw();
-                swerve.updateOdometry();
-                swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new Rotation2d(0));
-                swerve.updateOdometry();
-            }
+            // if (joystick.getRawButton(7)) {
+            // swerve.ahrs.zeroYaw();
+            // swerve.updateOdometry();
+            // swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new
+            // Rotation2d(0));
+            // swerve.updateOdometry();
+            // }
 
             /* Aimer */
 
@@ -548,7 +721,7 @@ public class Robot extends RobotBase {
             limelight.update();
             swerve.updateOdometry();
 
-            System.out.println("Odometry: " + swerve.m_odometry.getPoseMeters());
+            // System.out.println("Odometry: " + swerve.m_odometry.getPoseMeters());
             sb_odo_t.setDouble(swerve.m_odometry.getPoseMeters().getRotation().getDegrees());
             sb_odo_x.setDouble(swerve.m_odometry.getPoseMeters().getX());
             sb_odo_y.setDouble(swerve.m_odometry.getPoseMeters().getY());
@@ -615,6 +788,29 @@ public class Robot extends RobotBase {
             swerve.m_odometry.resetPosition(new Pose2d(0., 0., new Rotation2d(0)), new Rotation2d(0));
             swerve.updateOdometry();
         }
+        while (isEnabled()) {
+            // System.out.println("Climber: " + climber.getPosition());
+            if (joystick.getYButton() && climber.getPosition() > -415562) {
+                climber.set(-1);
+            } else if (joystick.getAButton() && climber.getPosition() < -8000) {
+                climber.set(1);
+            } else {
+                if (climber.getPosition() <= -415562) {
+                    climber.set(0.05);
+                } else {
+                    climber.set(0);
+                }
+            }
+            Timer.delay(0.005);
+        }
+
+        // while (isEnabled() && isTest()) {
+
+        // shooter.m_left.set(-joystick.getRawAxis(1));
+        // shooter.m_right.set(-joystick.getRawAxis(5));
+
+        // Timer.delay(0.005);
+        // }
 
     }
 
