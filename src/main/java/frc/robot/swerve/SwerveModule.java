@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
@@ -119,8 +120,14 @@ public class SwerveModule {
     }
 
     public void resetEncoders() {
+        double rad_sum = 0;
+        for (int i=0; i<10; i++) {
+            rad_sum += getAbsoluteEncoderRad();
+            Timer.delay(0.005);
+        }
+        rad_sum /= 10;
         m_driveEncoder.setPosition(0);
-        m_turningEncoder.setPosition(getAbsoluteEncoderRad());
+        m_turningEncoder.setPosition(rad_sum);
     }
 
     public double getAbsoluteEncoderRad() {

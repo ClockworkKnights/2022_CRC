@@ -14,15 +14,15 @@ public class Swerve {
     public static final double kMaxSpeed = 5.0; // 3 meters per second
     public static final double kMaxAngularSpeed = 4 * Math.PI; // 1/2 rotation per second
 
-    public static final double k_lf_abs_enc_offset = 3.962054;
-    public static final double k_rf_abs_enc_offset = 5.113449829316348;
-    public static final double k_lb_abs_enc_offset = 1.5226087;
-    public static final double k_rb_abs_enc_offset = 2.401198196463655;
+    // public static final double k_lf_abs_enc_offset = 3.962054;
+    // public static final double k_rf_abs_enc_offset = 5.113449829316348;
+    // public static final double k_lb_abs_enc_offset = 1.5226087;
+    // public static final double k_rb_abs_enc_offset = 2.401198196463655;
 
-    // public static final double k_lf_abs_enc_offset = 0;
-    // public static final double k_rf_abs_enc_offset = 0;
-    // public static final double k_lb_abs_enc_offset = 0;
-    // public static final double k_rb_abs_enc_offset = 0;
+    public static final double k_lf_abs_enc_offset = 4.806655008451581  + 3/180*Math.PI;
+    public static final double k_rf_abs_enc_offset = 5.115053482746271  + 3/180*Math.PI;
+    public static final double k_lb_abs_enc_offset = 1.4957074455038681 + (-3)/180*Math.PI;
+    public static final double k_rb_abs_enc_offset = 2.393839716189202  + (-3)/180*Math.PI;
 
     public final SwerveModule m_lf = new SwerveModule(2, 1, false, true, 0, k_lf_abs_enc_offset, false, 1);
     public final SwerveModule m_rf = new SwerveModule(3, 4, true, true, 1, k_rf_abs_enc_offset, false, 1);

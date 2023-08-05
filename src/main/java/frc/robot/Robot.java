@@ -53,7 +53,7 @@ public class Robot extends RobotBase {
     private NetworkTableEntry sb_odo_t = sb_tab.add("Odo T", 0).getEntry();
 
     private NetworkTableEntry sb_auto_chooser = sb_tab.add("Autonomous Program", "0").getEntry();
-    private NetworkTableEntry sb_color_chooser = sb_tab.add("Color", "Blue").getEntry();
+    private NetworkTableEntry sb_color_chooser = sb_tab.add("Color", "Green").getEntry();
 
     public void robotInit() {
         sb_auto_chooser.setString("3");
@@ -72,14 +72,6 @@ public class Robot extends RobotBase {
             System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
             swerve.m_rb.getTurningPosition());
             System.out.println("Climber: " + climber.getPosition());
-
-            String color_chosen = sb_color_chooser.getString("Blue");
-            ColorResult color_opposite;
-            if (color_chosen == "Blue") {
-                color_opposite = ColorResult.Red;
-            } else {
-                color_opposite = ColorResult.Blue;
-            }
             // System.out.println("Color: " + color_chosen + " " +
             // (color_chosen.equals("Blue")));
         }
@@ -483,7 +475,7 @@ public class Robot extends RobotBase {
 
                 pid_x.setSetpoint(1.15);
                 pid_y.setSetpoint(0);
-                pid_t.setSetpoint(160);
+                pid_t.setSetpoint(180);
 
                 intake.set_eat(0);
                 intake.set_down(0);
@@ -508,7 +500,7 @@ public class Robot extends RobotBase {
                             true);
                     swerve.updateOdometry();
 
-                    if (Math.abs(swerve.ahrs.getAngle() - 160) > 5) {
+                    if (Math.abs(swerve.ahrs.getAngle() - 180) > 5) {
                         time = Timer.getFPGATimestamp();
                     }
 
@@ -569,7 +561,7 @@ public class Robot extends RobotBase {
 
             /* Intake */
 
-            String color_chosen = sb_color_chooser.getString("Blue");
+            String color_chosen = sb_color_chooser.getString("Green");
             ColorResult color_opposite;
             if (color_chosen.equals("Blue")) {
                 color_opposite = ColorResult.Red;
