@@ -63,15 +63,15 @@ public class Robot extends RobotBase {
     public void disabled() {
         while (!isEnabled()) {
             intake.m_down.setInverted(true);
-            // System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
-            // swerve.m_lf.getTurningPosition());
-            // System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
-            // swerve.m_rf.getTurningPosition());
-            // System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
-            // swerve.m_lb.getTurningPosition());
-            // System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
-            // swerve.m_rb.getTurningPosition());
-            // System.out.println("Climber: " + climber.getPosition());
+            System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
+            swerve.m_lf.getTurningPosition());
+            System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
+            swerve.m_rf.getTurningPosition());
+            System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
+            swerve.m_lb.getTurningPosition());
+            System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
+            swerve.m_rb.getTurningPosition());
+            System.out.println("Climber: " + climber.getPosition());
 
             String color_chosen = sb_color_chooser.getString("Blue");
             ColorResult color_opposite;
@@ -218,6 +218,9 @@ public class Robot extends RobotBase {
                         swerve.drive(0, 0, aimer_turn);
                         shooting_target = shooting_target * 0.8 + aiming_speed(limelight.y) * 0.2;
                         shooting_angle = shooting_angle * 0.8 + aiming_angle(limelight.y) * 0.2;
+                    }
+                    else {
+                        swerve.drive(0, 0, 0);
                     }
                     shooter.setVelocity(shooting_target);
                     if (!ready_shoot(shooting_target)) {

@@ -14,19 +14,9 @@ public class Swerve {
     public static final double kMaxSpeed = 5.0; // 3 meters per second
     public static final double kMaxAngularSpeed = 4 * Math.PI; // 1/2 rotation per second
 
-    // public static final double k_lf_abs_enc_offset = 2.569189143370707;
-    // public static final double k_rf_abs_enc_offset = 5.093351582440393;
-    // public static final double k_lb_abs_enc_offset = 1.5228514157835433;
-    // public static final double k_rb_abs_enc_offset = 5.38610483240299+Math.PI;
-
-    // public static final double k_lf_abs_enc_offset = 4.348730001165526;
-    // public static final double k_rf_abs_enc_offset = 2.0045900829154846 + Math.PI;
-    // public static final double k_lb_abs_enc_offset = 1.5969793037931925 - 2 / 180 * Math.PI;
-    // public static final double k_rb_abs_enc_offset = 0.5906674820544972 + Math.PI - 13 / 180 * Math.PI - 0.1727;
-
-    public static final double k_lf_abs_enc_offset = 4.2892527057001555;
+    public static final double k_lf_abs_enc_offset = 3.962054;
     public static final double k_rf_abs_enc_offset = 5.113449829316348;
-    public static final double k_lb_abs_enc_offset = 1.5813990179025272;
+    public static final double k_lb_abs_enc_offset = 1.5226087;
     public static final double k_rb_abs_enc_offset = 2.401198196463655;
 
     // public static final double k_lf_abs_enc_offset = 0;
