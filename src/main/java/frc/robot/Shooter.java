@@ -98,7 +98,7 @@ public class Shooter {
 
     public void setVelocity(double velocity) {
         
-        System.out.print("Desired: " + velocity + " ");
+        // System.out.print("Desired: " + velocity + " ");
         double vel_now = m_left.getSelectedSensorVelocity();
         if (velocity < vel_now - 1000) {
             velocity = 0;
@@ -106,7 +106,7 @@ public class Shooter {
         else if (velocity > vel_now + 1000) {
             velocity = vel_now + 1000;
         }
-        System.out.println("Real: " + velocity + " Now: " + vel_now);
+        // System.out.println("Real: " + velocity + " Now: " + vel_now);
         if (velocity < 2000) {
             m_left.config_kI(0, 0);
             m_right.config_kI(0, 0);
