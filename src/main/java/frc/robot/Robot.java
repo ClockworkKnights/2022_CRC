@@ -57,23 +57,24 @@ public class Robot extends RobotBase {
 
     public void robotInit() {
         sb_auto_chooser.setString("3");
-        sb_color_chooser.setString("Blue");
+        sb_color_chooser.setString("Green");
     }
 
     public void disabled() {
         while (!isEnabled()) {
             intake.m_down.setInverted(true);
-            System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
-            swerve.m_lf.getTurningPosition());
-            System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
-            swerve.m_rf.getTurningPosition());
-            System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
-            swerve.m_lb.getTurningPosition());
-            System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
-            swerve.m_rb.getTurningPosition());
-            System.out.println("Climber: " + climber.getPosition());
+            // System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
+            // swerve.m_lf.getTurningPosition());
+            // System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
+            // swerve.m_rf.getTurningPosition());
+            // System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
+            // swerve.m_lb.getTurningPosition());
+            // System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
+            // swerve.m_rb.getTurningPosition());
+            // System.out.println("Climber: " + climber.getPosition());
             // System.out.println("Color: " + color_chosen + " " +
             // (color_chosen.equals("Blue")));
+            Timer.delay(0.005);
         }
     }
 
