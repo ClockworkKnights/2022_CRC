@@ -121,11 +121,11 @@ public class SwerveModule {
 
     public void resetEncoders() {
         double rad_sum = 0;
-        for (int i=0; i<10; i++) {
+        for (int i=0; i<50; i++) {
             rad_sum += getAbsoluteEncoderRad();
-            Timer.delay(0.005);
+            Timer.delay(0.001);
         }
-        rad_sum /= 10;
+        rad_sum /= 50;
         m_driveEncoder.setPosition(0);
         m_turningEncoder.setPosition(rad_sum);
     }

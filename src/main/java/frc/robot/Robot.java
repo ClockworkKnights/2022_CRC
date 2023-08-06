@@ -55,25 +55,34 @@ public class Robot extends RobotBase {
     private NetworkTableEntry sb_auto_chooser = sb_tab.add("Autonomous Program", "0").getEntry();
     private NetworkTableEntry sb_color_chooser = sb_tab.add("Color", "Green").getEntry();
 
+    
+    private NetworkTableEntry sb_lf = sb_tab.add("LF", 0).getEntry();
+    private NetworkTableEntry sb_rf = sb_tab.add("RF", 0).getEntry();
+    private NetworkTableEntry sb_lb = sb_tab.add("LB", 0).getEntry();
+    private NetworkTableEntry sb_rb = sb_tab.add("RB", 0).getEntry();
+
+
     public void robotInit() {
         sb_auto_chooser.setString("3");
         sb_color_chooser.setString("Green");
     }
 
     public void disabled() {
+        double lf = 0, rf = 0, lb = 0, rb = 0;
         while (!isEnabled()) {
             intake.m_down.setInverted(true);
-            // System.out.println("LF: " + swerve.m_lf.getAbsoluteEncoderRad() + " " +
-            // swerve.m_lf.getTurningPosition());
-            // System.out.println("RF: " + swerve.m_rf.getAbsoluteEncoderRad() + " " +
-            // swerve.m_rf.getTurningPosition());
-            // System.out.println("LB: " + swerve.m_lb.getAbsoluteEncoderRad() + " " +
-            // swerve.m_lb.getTurningPosition());
-            // System.out.println("RB: " + swerve.m_rb.getAbsoluteEncoderRad() + " " +
-            // swerve.m_rb.getTurningPosition());
-            // System.out.println("Climber: " + climber.getPosition());
-            // System.out.println("Color: " + color_chosen + " " +
-            // (color_chosen.equals("Blue")));
+            // lf = lf * 0.97 + swerve.m_lf.getAbsoluteEncoderRad() * 0.03;
+            // rf = rf * 0.97 + swerve.m_rf.getAbsoluteEncoderRad() * 0.03;
+            // lb = lb * 0.97 + swerve.m_lb.getAbsoluteEncoderRad() * 0.03;
+            // rb = rb * 0.97 + swerve.m_rb.getAbsoluteEncoderRad() * 0.03;
+            lf = swerve.m_lf.getAbsoluteEncoderRad();
+            rf = swerve.m_rf.getAbsoluteEncoderRad();
+            lb = swerve.m_lb.getAbsoluteEncoderRad();
+            rb = swerve.m_rb.getAbsoluteEncoderRad();
+            sb_lf.setDouble(lf);
+            sb_rf.setDouble(rf);
+            sb_lb.setDouble(lb);
+            sb_rb.setDouble(rb);
             Timer.delay(0.005);
         }
     }
@@ -211,8 +220,7 @@ public class Robot extends RobotBase {
                         swerve.drive(0, 0, aimer_turn);
                         shooting_target = shooting_target * 0.8 + aiming_speed(limelight.y) * 0.2;
                         shooting_angle = shooting_angle * 0.8 + aiming_angle(limelight.y) * 0.2;
-                    }
-                    else {
+                    } else {
                         swerve.drive(0, 0, 0);
                     }
                     shooter.setVelocity(shooting_target);
@@ -222,8 +230,7 @@ public class Robot extends RobotBase {
                     } else {
                         if (Timer.getFPGATimestamp() - time > 0.5) {
                             intake.set_up(1);
-                        }
-                        else {
+                        } else {
                             intake.set_up(0);
                         }
                     }
