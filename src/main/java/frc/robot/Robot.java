@@ -563,8 +563,8 @@ public class Robot extends RobotBase {
             double joystick_rotation = MathUtil.applyDeadband(joystick.getRawAxis(joystick_axis_rotation), 0.04);
 
             if (!joystick.getRawButton(5)) {
-                swerve.drive(joystick_forward * 2.2, joystick_sideway * 2.2,
-                        joystick_rotation * 3); // 3.5 3.5 7
+                swerve.drive(joystick_forward * 3, joystick_sideway * 3,
+                        joystick_rotation * 6); // 3.5 3.5 7
             }
 
             /* Intake */
@@ -669,10 +669,10 @@ public class Robot extends RobotBase {
                 limelight.update();
                 if (limelight.valid) {
                     double aimer_turn = Math.min(0.4, Math.max(-0.4, pid_aimer.calculate(-limelight.x)));
-                    swerve.drive(joystick_forward * 1.4, joystick_sideway * 1.4, aimer_turn);
+                    swerve.drive(joystick_forward * 2.5, joystick_sideway * 2.5, aimer_turn);
                 } else {
-                    swerve.drive(joystick_forward * 2.2, joystick_sideway * 2.2,
-                            joystick_rotation * 3); // 3.5 3.5 7
+                    swerve.drive(joystick_forward * 3, joystick_sideway * 3,
+                            joystick_rotation * 6); // 3.5 3.5 7
                 }
             } else {
                 aiming = shooting;
