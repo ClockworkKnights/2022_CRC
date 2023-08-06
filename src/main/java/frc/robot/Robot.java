@@ -483,7 +483,7 @@ public class Robot extends RobotBase {
 
                 pid_x.setSetpoint(1.15);
                 pid_y.setSetpoint(0);
-                pid_t.setSetpoint(180);
+                pid_t.setSetpoint(169);
 
                 intake.set_eat(0);
                 intake.set_down(0);
@@ -508,7 +508,7 @@ public class Robot extends RobotBase {
                             true);
                     swerve.updateOdometry();
 
-                    if (Math.abs(swerve.ahrs.getAngle() - 180) > 5) {
+                    if (Math.abs(swerve.ahrs.getAngle() - 169) > 5) {
                         time = Timer.getFPGATimestamp();
                     }
 
